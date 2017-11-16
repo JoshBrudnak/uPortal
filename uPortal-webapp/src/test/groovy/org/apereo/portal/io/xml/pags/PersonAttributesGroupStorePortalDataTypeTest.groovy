@@ -16,20 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apereo.portal.io.xml.pags;
+package org.apereo.portal.io.xml.pags
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Collections
+import java.util.Set
 
-import org.apereo.portal.io.xml.IPortalDataType;
-import org.apereo.portal.io.xml.PortalDataKey;
+import org.apereo.portal.io.xml.IPortalDataType
+import org.apereo.portal.io.xml.PortalDataKey
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.*
+import org.junit.Test
 
 class PersonAttributesGroupStorePortalDataTypeTest {
 
-    IPortalDataType portalDataType = new PersonAttributesGroupStorePortalDataType();
+    IPortalDataType portalDataType = new PersonAttributesGroupStorePortalDataType()
 
     @Test
     void testPostProcessPortalDataKey() {
@@ -38,19 +38,19 @@ class PersonAttributesGroupStorePortalDataTypeTest {
         Set<PortalDataKey> keys41 = portalDataType.postProcessPortalDataKey(
             null,   // unused
             PersonAttributesGroupStorePortalDataType.IMPORT_PAGS_41_DATA_KEY,
-            null);  // unused
+            null)  // unused
         assertEquals('Incorrect output from postProcessPortalDataKey() -- ',
             PersonAttributesGroupStorePortalDataType.PAGS_GROUP_MEMBERS_41_KEYS,
-            keys41);
+            keys41)
 
         // Single, specific key
         Set<PortalDataKey> groupKey41 = portalDataType.postProcessPortalDataKey(
             null,   // unused
             PersonAttributesGroupStorePortalDataType.IMPORT_PAGS_GROUP_41_DATA_KEY,
-            null);  // unused
+            null)  // unused
         assertEquals('Incorrect output from postProcessPortalDataKey() -- ',
             Collections.singleton(PersonAttributesGroupStorePortalDataType.IMPORT_PAGS_GROUP_41_DATA_KEY),
-            groupKey41);
+            groupKey41)
 
     }
 
