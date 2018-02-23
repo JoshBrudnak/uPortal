@@ -15,7 +15,6 @@
 package org.apereo.portal.utils.jdbc;
 
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,9 @@ import org.apereo.portal.hibernate.DelegatingHibernateIntegrator.HibernateConfig
 import org.apereo.portal.hibernate.HibernateConfigurationAware;
 import org.apereo.portal.utils.Tuple;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.service.jdbc.dialect.spi.DialectResolver;
+import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
+import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
+import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.jasig.portlet.utils.jdbc.DelayedValidationQueryResolver;
 import org.slf4j.Logger;
@@ -46,8 +47,7 @@ public class DelayedValidationQueryResolverImpl
     private DialectResolver dialectResolver;
 
     public void setValidationQueryMap(Map<Class<? extends Dialect>, String> validationQueryMap) {
-        this.validationQueryMap =
-                new ConcurrentHashMap<Class<? extends Dialect>, String>(validationQueryMap);
+        this.validationQueryMap = new ConcurrentHashMap<>(validationQueryMap);
     }
 
     public void setPersistenceUnit(String persistenceUnit) {
@@ -87,8 +87,7 @@ public class DelayedValidationQueryResolverImpl
                 validationQueryRegistrationHandler.setValidationQuery(validationQuery);
             } else {
                 this.delayedDataSources.add(
-                        new Tuple<DataSource, ValidationQueryRegistrationHandler>(
-                                dataSource, validationQueryRegistrationHandler));
+                        new Tuple<>(dataSource, validationQueryRegistrationHandler));
             }
         }
     }
@@ -129,14 +128,16 @@ public class DelayedValidationQueryResolverImpl
 
     protected Dialect resolveDialect(DataSource dataSource) {
         try {
+
             return (Dialect)
                     JdbcUtils.extractDatabaseMetaData(
                             dataSource,
                             new DatabaseMetaDataCallback() {
                                 @Override
-                                public Object processMetaData(DatabaseMetaData dbmd)
-                                        throws SQLException, MetaDataAccessException {
-                                    return dialectResolver.resolveDialect(dbmd);
+                                public Object processMetaData(DatabaseMetaData dbmd) {
+                                    DialectResolutionInfo adapter =
+                                            new DatabaseMetaDataDialectResolutionInfoAdapter(dbmd);
+                                    return dialectResolver.resolveDialect(adapter);
                                 }
                             });
         } catch (MetaDataAccessException e) {
